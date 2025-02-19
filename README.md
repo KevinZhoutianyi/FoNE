@@ -5,7 +5,8 @@
 [![Website](https://img.shields.io/badge/Website-FoNE-blue)](https://fouriernumber.github.io/)
 
 📌 **FoNE: Precise Single-Token Number Embeddings via Fourier Features
-🔢 Efficient and accurate numerical representation for **Large Language Models (LLMs)**.**
+
+**🔢 Efficient and accurate numerical representation for **Large Language Models (LLMs)**.****
 
 ---
 
