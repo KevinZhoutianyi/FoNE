@@ -70,13 +70,12 @@ FoNE achieves **99%+ accuracy with 64× less data** compared to baseline models.
 If you find this project useful, please cite our work:
 
 ```bibtex
-@article{zhou2024fone,
-        title={FoNE: Precise Single-Token Number Embeddings via Fourier Features},
-        author={Tianyi Zhou, Deqing Fu, Mahdi Soltanolkotabi, Robin Jia, Vatsal Sharan},
-        journal={arXiv preprint arXiv:2502.09741},
-        year={2025},
-        url={https://arxiv.org/abs/2502.09741}
-      }
+@article{zhou2025fone,
+  title={FoNE: Precise Single-Token Number Embeddings via Fourier Features},
+  author={Zhou, Tianyi and Fu, Deqing and Soltanolkotabi, Mahdi and Jia, Robin and Sharan, Vatsal},
+  journal={arXiv preprint arXiv:2502.09741},
+  year={2025}
+}
 ```
 
 ---
