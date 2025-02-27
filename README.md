@@ -1,6 +1,6 @@
 # Fourier Number Embedding (FoNE)
 
-[![Arxiv](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/your-paper-id)
+[![Arxiv](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/2502.09741)
 [![GitHub](https://img.shields.io/badge/GitHub-Repo-black?logo=github)](https://github.com/KevinZhoutianyi/FNE)
 [![Website](https://img.shields.io/badge/Website-FoNE-blue)](https://fouriernumber.github.io/)
 
