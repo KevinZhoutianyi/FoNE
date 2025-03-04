@@ -60,7 +60,7 @@ def parse_period_base_list(period_base_list):
 
 def load_and_prepare_data(args, tokenizer):
     """
-    Loads and preprocesses the dataset for non-time series (text) data.
+    Loads and preprocesses the dataset for data.
     """
     from utils.data_utils import load_and_preprocess_dataset  # Local import if needed
     train_data, test_data = load_and_preprocess_dataset(
@@ -115,7 +115,6 @@ def initialize_optimizer_and_scheduler(model, train_loader, args):
 def run_epoch(model, train_loader, test_loader, optimizer, scheduler, number_encoder, args, epoch, device, tokenizer=None):
     """
     Runs one training epoch and evaluates the model.
-    For text methods, tokenizer is provided; for time series, tokenizer can be None.
     """
     if args.method == 'regular':
         train_loss = train_regular(model, train_loader, optimizer, scheduler, device, args)
@@ -208,20 +207,12 @@ def evaluate_model(model, test_loader, tokenizer, number_encoder, args, device, 
 def create_dataloader_and_train(args, model, tokenizer, device):
     """
     Prepares data loaders and executes the training and evaluation pipeline.
-    If args.dataset ends with '.csv', it is treated as a time series dataset.
     """
-    # Detect if the dataset is a CSV file (time series data)
-    if isinstance(args.dataset, str) and args.dataset.endswith(".csv"):
-        # Load time series data from CSV
-        train_data, test_data = load_timeseries_data(args)
-        train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
-        test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
-        tok = None  # Tokenizer is not needed for time series data
-    else:
-        # Load text (or tabular) data using your existing function
-        train_data, test_data, num_token = load_and_prepare_data(args, tokenizer)
-        train_loader, test_loader = create_data_loaders(train_data, test_data, tokenizer, num_token, args)
-        tok = tokenizer
+
+    # Load text (or tabular) data using your existing function
+    train_data, test_data, num_token = load_and_prepare_data(args, tokenizer)
+    train_loader, test_loader = create_data_loaders(train_data, test_data, tokenizer, num_token, args)
+    tok = tokenizer
 
     # Initialize the appropriate number encoder based on the method
     number_encoder = None
