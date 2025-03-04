@@ -56,48 +56,7 @@ def parse_period_base_list(period_base_list):
     """
     return [float(Fraction(base)) for base in period_base_list]
 
-# --- Functions for Time Series Data ---
 
-class TimeSeriesDataset(Dataset):
-    def __init__(self, series, window_size, prediction_size):
-        """
-        Given a 1D array of numbers (series), creates sliding window pairs.
-        """
-        self.X = []
-        self.Y = []
-        for i in range(len(series) - window_size - prediction_size + 1):
-            self.X.append(series[i: i + window_size])
-            self.Y.append(series[i + window_size: i + window_size + prediction_size])
-        self.X = torch.tensor(self.X, dtype=torch.float32)
-        self.Y = torch.tensor(self.Y, dtype=torch.float32)
-        
-    def __len__(self):
-        return len(self.X)
-    
-    def __getitem__(self, idx):
-        return {"input_ids": self.X[idx], "labels": self.Y[idx]}
-
-def load_timeseries_data(args):
-    """
-    Loads a CSV time series file (expects a column named "OT"),
-    creates sliding windows with window size and prediction size specified in args,
-    and returns train/test splits.
-    """
-    import pandas as pd
-    df = pd.read_csv(args.dataset)
-    series = df["OT"].values  # Ensure your CSV has a column "OT"
-    window_size = args.window_size         # e.g., window_size = 10
-    prediction_size = args.prediction_size   # e.g., prediction_size = 2
-    
-    dataset = TimeSeriesDataset(series, window_size, prediction_size)
-    
-    # Use an 80/20 split (or adjust as needed)
-    train_size = int(0.8 * len(dataset))
-    test_size = len(dataset) - train_size
-    train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
-    return train_dataset, test_dataset
-
-# --- Standard Data Loading (for text) ---
 
 def load_and_prepare_data(args, tokenizer):
     """
