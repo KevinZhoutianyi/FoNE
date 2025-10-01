@@ -2,6 +2,7 @@ import logging
 import re
 from fractions import Fraction
 import torch
+import itertools
 from torch.utils.data import DataLoader, Dataset
 import wandb
 from datasets import load_dataset
@@ -94,12 +95,18 @@ def create_data_loaders(train_data, test_data, tokenizer, num_token, args):
 
 # --- Optimizer & Scheduler ---
 
-def initialize_optimizer_and_scheduler(model, train_loader, args):
+def initialize_optimizer_and_scheduler(model, number_encoder, train_loader, args):
     """
     Initializes the optimizer and learning rate scheduler.
     """
     from transformers import get_scheduler
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
+    # Include number encoder parameters (e.g., FNE/XVAL/Vanilla) when training those methods
+    if args.method in ['fne', 'xval', 'vanilla'] and number_encoder is not None:
+        params = itertools.chain(model.parameters(), number_encoder.parameters())
+    else:
+        params = model.parameters()
+
+    optimizer = torch.optim.AdamW(params, lr=args.lr)
     total_steps = len(train_loader) * args.epochs
     warmup_steps = int(0.2 * total_steps)
     scheduler = get_scheduler(
@@ -242,7 +249,7 @@ def create_dataloader_and_train(args, model, tokenizer, device):
         evaluate_model(model, test_loader, tok, number_encoder, args, device, stage="Single Evaluation")
         return
     
-    optimizer, scheduler = initialize_optimizer_and_scheduler(model, train_loader, args)
+    optimizer, scheduler = initialize_optimizer_and_scheduler(model, number_encoder, train_loader, args)
     
     for epoch in range(args.epochs):
         logging.info('-' * 100)

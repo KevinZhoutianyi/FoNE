@@ -29,6 +29,8 @@ def evaluate_fne(model, test_loader, fne, int_digit_len, frac_digit_len, device,
 
             regular_embeddings = get_regular_embeddings(model, input_ids)
             fourier_embeddings = fne(scatter_tensor)
+            # Align dtype to avoid float/bfloat16 mismatch
+            fourier_embeddings = fourier_embeddings.to(dtype=regular_embeddings.dtype)
             input_embeddings = regular_embeddings + fourier_embeddings
 
             outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)
@@ -185,6 +187,8 @@ def evaluate_xval(model, test_loader, xval, device, print_labels=False, max_prin
 
             regular_embeddings = get_regular_embeddings(model, input_ids)
             input_embeddings = xval(scatter_tensor, regular_embeddings)
+            # Ensure input embeddings match model dtype
+            input_embeddings = input_embeddings.to(dtype=regular_embeddings.dtype)
 
             outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)
             before_decoder = outputs.hidden_states[-1]
@@ -259,6 +263,8 @@ def evaluate_vanilla(model, test_loader, vanilla_model, device, print_labels=Fal
 
             regular_embeddings = get_regular_embeddings(model, input_ids)
             vanilla_embeddings = vanilla_model(scatter_tensor)
+            # Align dtype with model embeddings
+            vanilla_embeddings = vanilla_embeddings.to(dtype=regular_embeddings.dtype)
             input_embeddings = regular_embeddings + vanilla_embeddings
 
             outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)

@@ -20,6 +20,8 @@ def train_fne(model, train_loader, fne, optimizer, scheduler, args, int_digit_le
         
         regular_embeddings = get_regular_embeddings(model, input_ids)
         fourier_embeddings = fne(scatter_tensor, len_gen=len_gen)
+        # Align dtype with model embeddings to avoid float/bfloat16 mismatch
+        fourier_embeddings = fourier_embeddings.to(dtype=regular_embeddings.dtype)
         input_embeddings = regular_embeddings + fourier_embeddings
 
         outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)
@@ -85,6 +87,8 @@ def train_xval(model, train_loader, xval, optimizer, scheduler, args, device):
 
         regular_embeddings = get_regular_embeddings(model, input_ids)
         input_embeddings = xval(scatter_tensor, regular_embeddings)
+        # Ensure input embeddings match model dtype
+        input_embeddings = input_embeddings.to(dtype=regular_embeddings.dtype)
         outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)
         before_decoder = outputs.hidden_states[-1]
         last_token_hidden_state = (before_decoder * last_token_mask.unsqueeze(-1)).sum(dim=1)
@@ -121,6 +125,8 @@ def train_vanilla(model, train_loader, vanilla_model, optimizer, scheduler, args
         
         regular_embeddings = get_regular_embeddings(model, input_ids)
         vanilla_embeddings = vanilla_model(scatter_tensor)
+        # Align dtype with model embeddings
+        vanilla_embeddings = vanilla_embeddings.to(dtype=regular_embeddings.dtype)
         input_embeddings = regular_embeddings + vanilla_embeddings
 
         outputs = model(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True)
